@@ -21,7 +21,6 @@ function apiFunc() {
 }
 
 function getPic() {
-  console.log("pic");
   fetch(picUrl)
     .then(function (response) {
       return response.json();
@@ -37,7 +36,6 @@ function getPic() {
 }
 
 function getDets() {
-  console.log("the dets");
   fetch(apiUrl)
     .then(function (response) {
       return response.json();
@@ -47,12 +45,14 @@ function getDets() {
       var fact = document.createElement("li");
       var fact2 = document.createElement("li");
       var fact3 = document.createElement("li");
+      var blank = document.createElement("li");
       fact.textContent = data.username;
       fact2.textContent = data.name;
       fact3.textContent = data.tags[0];
       list.append(fact);
       list.append(fact2);
       list.append(fact3);
+      list.append(blank);
       similarSounds();
     });
 }
@@ -65,10 +65,17 @@ function playMusic() {
     })
     .then(function (data) {
       console.log(data);
-      console.log(data.previews["preview-hq-mp3"]);
       var music = new Audio(data.previews["preview-hq-mp3"]);
-      music.volume = 1;
-      music.play();
+      if (music.paused) {
+        music.play();
+        playBtn.innerHTML = "Pause Music";
+        console.log(music.paused);
+        music.paused = false;
+      } else {
+        console.log("pause");
+        music.pause();
+        playBtn.innerHTML = "Play Music";
+      }
     });
 }
 
@@ -86,7 +93,8 @@ function similarSounds() {
         })
         .then(function (data) {
           console.log(data);
-          for (var i = 1; i < 5; i++) {
+
+          for (var i = 1; i < data.results.length; i++) {
             fetch(userUrl + data.results[i].username + "/?token=" + apiKey)
               .then(function (response) {
                 return response.json();
@@ -98,17 +106,18 @@ function similarSounds() {
                 pic.src = picSrc;
                 list.append(pic);
               });
-            var pic = document.createElement("img");
             var list = document.querySelector(".list");
             var fact = document.createElement("li");
             var fact2 = document.createElement("li");
             var fact3 = document.createElement("li");
+            var blank = document.createElement("li");
             fact.textContent = data.results[i].username;
             fact2.textContent = data.results[i].name;
             fact3.textContent = data.results[i].tags[0];
             list.append(fact);
             list.append(fact2);
             list.append(fact3);
+            list.append(blank);
           }
         });
     });
